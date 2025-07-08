@@ -1,0 +1,383 @@
+{
+  "createdAt": "2025-07-01T11:44:56.039Z",
+  "updatedAt": "2025-07-08T15:35:45.000Z",
+  "id": "xH1NWce68w0W7anQ",
+  "name": "002. AI 프롬프트도 AI가! - system prompt by AI",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "searchQuery"
+            },
+            {
+              "name": "dateAfter"
+            },
+            {
+              "name": "dateBefore"
+            },
+            {
+              "name": "selectedPlaylists",
+              "type": "array"
+            },
+            {
+              "name": "youtubeChannels",
+              "type": "array"
+            },
+            {
+              "name": "parent_ids",
+              "type": "array"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e59f305f-af5d-431b-9311-93781f62e68b",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=검색어 : {{ $json.searchQuery }}\nwanted channels: \n{{ $json.youtubeChannels }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a YouTube search query generator. Given a search topic and target channels, generate diverse and non-overlapping search queries optimized for finding relevant content.\n\nYour task:\n1. Extract base keywords from the input search topic (minimal set, no duplicates)\n2. Generate diverse search query variations with minimal overlap:\n   - Core terms (basic keywords only)\n   - Channel-specific queries (limit to 1-2 per channel)\n   - Related/expanded terms (synonyms, technical terms)\n   - Context-specific queries (tutorials, reviews, explanations)\n   - Technical combinations (unique combinations only)\n\nRules:\n- Keep English terms in English (do not translate to Korean)\n- Extract minimal base keyword set from input\n- Each augmented query must reference which base keyword(s) it derives from\n- Don't repeat the same base term with minor variations\n- Use synonyms and related terms instead of duplicating\n- Focus on different search intents (learning, comparison, implementation, etc.)\n- Generate 15-20 distinct search queries that cover different aspects\n\nOutput the base keywords and search queries in the specified JSON format."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "997b6146-9321-4a0a-9470-2ab1265d18e6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        140,
+        260
+      ],
+      "id": "bc85bb49-6968-4cd1-bc2c-1b64c6e669f5",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "wCp1s5K88PESNvOR",
+          "name": "ZDefault"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"$id\": \"https://example.com/youtube-search-queries.schema.json\",\n  \"title\": \"YouTube Search Queries with Base Keywords\",\n  \"description\": \"Generated search queries for YouTube content discovery with base keyword mapping\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"base_keywords\": {\n      \"description\": \"Minimal set of base keywords extracted from input search topic\",\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\",\n        \"description\": \"A base keyword from the input search topic\"\n      },\n      \"minItems\": 1\n    },\n    \"search_queries\": {\n      \"description\": \"Array of generated search query objects with base keyword references\",\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"query\": {\n            \"type\": \"string\",\n            \"description\": \"The search query string for YouTube\"\n          },\n          \"based_on\": {\n            \"type\": \"string\",\n            \"description\": \"The most relevant base keyword this query is derived from\"\n          }\n        },\n        \"required\": [\"query\", \"based_on\"]\n      },\n      \"minItems\": 1\n    }\n  },\n  \"required\": [\"base_keywords\", \"search_queries\"]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        420,
+        240
+      ],
+      "id": "bfeb1945-7747-43ee-bf79-2396af1e4d75",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "content": "## system prompt를 만드는 prompt\nhttps://www.genspark.ai/agents?id=f3a3caf8-1e7f-4bb5-b666-b5289ae15114",
+        "width": 380
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        600,
+        -20
+      ],
+      "id": "1f11c15a-3954-41ed-9cf2-50c934a89ba6",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "tableId": "workflow_tasks",
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        440,
+        -220
+      ],
+      "id": "eccfdf74-7b2e-4726-816c-aee2fdb63f46",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "szYmmRGq5qpTXmej",
+          "name": "Supabase account n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bedc3ace-9084-44a4-ad48-07e08648a261",
+              "name": "task_id",
+              "value": 1,
+              "type": "number"
+            },
+            {
+              "id": "1d75dd3a-1cc0-4a34-b762-16f44e515b4b",
+              "name": "title",
+              "value": "Youtube 검색 query 생성",
+              "type": "string"
+            },
+            {
+              "id": "46de35e0-08a9-4dac-8227-3f368026480e",
+              "name": "description",
+              "value": "Youtube 검색 query 생성",
+              "type": "string"
+            },
+            {
+              "id": "c414d3a9-6bdd-4269-b0ca-a478adf5891f",
+              "name": "status",
+              "value": "running",
+              "type": "string"
+            },
+            {
+              "id": "5d578bba-4f23-402c-a3cd-280d136f22d2",
+              "name": "parent_ids",
+              "value": "={{ $json.parent_ids }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        -220
+      ],
+      "id": "df97fcfd-0fa5-480e-8880-4bebb48a9869",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c414d3a9-6bdd-4269-b0ca-a478adf5891f",
+              "name": "status",
+              "value": "completed",
+              "type": "string"
+            },
+            {
+              "id": "d0b6cf69-ba09-40ad-b816-9094abd0e934",
+              "name": "description",
+              "value": "={{ $json.output.search_queries.map(item => item.query).join('</br>') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        760,
+        -220
+      ],
+      "id": "e694f7fd-355d-40f9-975b-8a9eea5c0662",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "workflow_tasks",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "task_id",
+              "condition": "eq",
+              "keyValue": "1"
+            }
+          ]
+        },
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        980,
+        -220
+      ],
+      "id": "3fe4fd5e-e5d3-4be6-baf9-b4f288022ae2",
+      "name": "Update a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "szYmmRGq5qpTXmej",
+          "name": "Supabase account n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        760,
+        240
+      ],
+      "id": "9d241228-c8cf-4135-92ac-1429bee29bbf",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "content": "## 005 진행상황 표시하기",
+        "height": 80,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        200,
+        -340
+      ],
+      "id": "7aafe27c-8158-44ac-a509-20307899a94b",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## 005 진행상황 표시하기",
+        "height": 80,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        760,
+        -340
+      ],
+      "id": "ab8c39bd-5dc6-41d8-a981-767a2008b733",
+      "name": "Sticky Note3"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "versionId": "2ce476c7-0e03-4624-baa0-a90e438d4413",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-07-08T15:35:33.705Z",
+      "updatedAt": "2025-07-08T15:35:33.705Z",
+      "id": "PaO0qjDwUNAeujfe",
+      "name": "n8n 서울 밋업"
+    }
+  ]
+}
