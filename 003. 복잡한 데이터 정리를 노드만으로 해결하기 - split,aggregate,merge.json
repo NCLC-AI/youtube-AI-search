@@ -1,0 +1,502 @@
+{
+  "createdAt": "2025-07-01T11:44:27.165Z",
+  "updatedAt": "2025-07-08T15:35:54.000Z",
+  "id": "gmodHqLpihbWOs87",
+  "name": "003. 복잡한 데이터 정리를 노드만으로 해결하기 - split/aggregate/merge",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "queries",
+              "type": "array"
+            },
+            {
+              "name": "dateAfter"
+            },
+            {
+              "name": "dateBefore"
+            },
+            {
+              "name": "selectedPlaylists",
+              "type": "array"
+            },
+            {
+              "name": "youtubeChannels",
+              "type": "array"
+            },
+            {
+              "name": "parent_ids",
+              "type": "array"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        100
+      ],
+      "id": "eef11815-9ddb-4714-83fc-626185469ba3",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "queries",
+        "include": "allOtherFields",
+        "options": {
+          "destinationFieldName": "query"
+        }
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        440,
+        0
+      ],
+      "id": "443c5785-0542-47a6-b3b5-22b589863b60",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "append",
+              "field": "query.query"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "query.based_on",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        0
+      ],
+      "id": "3cb174e4-ce1a-458a-9d6f-d4082b32c8ed",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "505999d7-aa91-4989-8ba2-2a61a4eeb375",
+              "name": "query",
+              "value": "={{ $json.appended_query_query.slice(0,3) }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        0
+      ],
+      "id": "9ba852c9-a85c-4709-96b5-48d8603f28c8",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "query",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        0
+      ],
+      "id": "e7c98f3c-e6cc-4c03-9369-530fc1925f2e",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1320,
+        100
+      ],
+      "id": "e735b0fd-0b7a-4fae-8647-6e07b4079620",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "11948c01-cfb2-4a90-9f74-50a8be455c5b",
+              "name": "dateAfter",
+              "value": "={{ $json.dateAfter }}",
+              "type": "string"
+            },
+            {
+              "id": "fe0a54b9-26b2-4f76-96f4-994f561569dc",
+              "name": "dateBefore",
+              "value": "={{ $json.dateBefore }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1100,
+        200
+      ],
+      "id": "130ae5e1-1e96-4d0c-826c-bc1930eb2eb4",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "tableId": "workflow_tasks",
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        660,
+        -200
+      ],
+      "id": "57e48238-366b-4984-8c29-647c2cf558b4",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "szYmmRGq5qpTXmej",
+          "name": "Supabase account n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c414d3a9-6bdd-4269-b0ca-a478adf5891f",
+              "name": "status",
+              "value": "completed",
+              "type": "string"
+            },
+            {
+              "id": "d0b6cf69-ba09-40ad-b816-9094abd0e934",
+              "name": "description",
+              "value": "={{ $json.query.join('</br>') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1780,
+        -40
+      ],
+      "id": "ba741225-91c2-4a8e-8247-f6a9dc213e1a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "workflow_tasks",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "task_id",
+              "condition": "eq",
+              "keyValue": "2"
+            }
+          ]
+        },
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1980,
+        -40
+      ],
+      "id": "4a5e3b44-20d3-448c-908b-9eb7a50543ff",
+      "name": "Update a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "szYmmRGq5qpTXmej",
+          "name": "Supabase account n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bedc3ace-9084-44a4-ad48-07e08648a261",
+              "name": "task_id",
+              "value": 2,
+              "type": "number"
+            },
+            {
+              "id": "1d75dd3a-1cc0-4a34-b762-16f44e515b4b",
+              "name": "title",
+              "value": "Youtube 검색 query 정리",
+              "type": "string"
+            },
+            {
+              "id": "46de35e0-08a9-4dac-8227-3f368026480e",
+              "name": "description",
+              "value": "Youtube 검색 query 정리",
+              "type": "string"
+            },
+            {
+              "id": "c414d3a9-6bdd-4269-b0ca-a478adf5891f",
+              "name": "status",
+              "value": "running",
+              "type": "string"
+            },
+            {
+              "id": "5d578bba-4f23-402c-a3cd-280d136f22d2",
+              "name": "parent_ids",
+              "value": "={{ $json.parent_ids }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        440,
+        -200
+      ],
+      "id": "ea806a34-4874-4116-bfc2-8602ff291e09",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1780,
+        280
+      ],
+      "id": "32c65a69-be46-45bb-9d72-efbc74883be1",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "query"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1580,
+        -40
+      ],
+      "id": "d01270fc-49ff-4e4a-ba0e-ee699b2b7416",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "content": "## 005 진행상황 표시하기",
+        "height": 80,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        440,
+        -340
+      ],
+      "id": "56ac2f9f-d2c7-424e-b62f-5754144fbebf",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## 005 진행상황 표시하기",
+        "height": 80,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        -180
+      ],
+      "id": "f8f8d961-6db9-49ff-97e7-d46b6a61e232",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "versionId": "0352f279-17d3-406e-ba62-43de254facc5",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-07-08T15:35:33.705Z",
+      "updatedAt": "2025-07-08T15:35:33.705Z",
+      "id": "PaO0qjDwUNAeujfe",
+      "name": "n8n 서울 밋업"
+    }
+  ]
+}
