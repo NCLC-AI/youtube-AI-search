@@ -1,0 +1,290 @@
+{
+  "createdAt": "2025-07-07T09:01:07.780Z",
+  "updatedAt": "2025-07-08T15:36:50.000Z",
+  "id": "Yd4JQTuIdAwz2mqs",
+  "name": "Playlist에 추가",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "task_id",
+              "type": "number"
+            },
+            {
+              "name": "parent_ids",
+              "type": "array"
+            },
+            {
+              "name": "videoId"
+            },
+            {
+              "name": "title"
+            },
+            {
+              "name": "playlist_id"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "bd38bcc2-4a75-4a92-b9c6-b33980aef802",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "resource": "playlistItem",
+        "playlistId": "={{ $json.playlist_id }}",
+        "videoId": "={{ $json.videoId }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        660,
+        0
+      ],
+      "id": "f2a29a7f-e07e-4af3-8610-5ba83ec7e7df",
+      "name": "Add a playlist item",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "26iW8g2Iqk4YBqnd",
+          "name": "YouTube account[MyProject]"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "workflow_tasks",
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        880,
+        -220
+      ],
+      "id": "0eb9b13b-1713-4cd2-994f-db9bb3cfef48",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "szYmmRGq5qpTXmej",
+          "name": "Supabase account n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bedc3ace-9084-44a4-ad48-07e08648a261",
+              "name": "task_id",
+              "value": "={{ $json.task_id }}",
+              "type": "number"
+            },
+            {
+              "id": "1d75dd3a-1cc0-4a34-b762-16f44e515b4b",
+              "name": "title",
+              "value": "Playlist에 추가",
+              "type": "string"
+            },
+            {
+              "id": "46de35e0-08a9-4dac-8227-3f368026480e",
+              "name": "description",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "c414d3a9-6bdd-4269-b0ca-a478adf5891f",
+              "name": "status",
+              "value": "running",
+              "type": "string"
+            },
+            {
+              "id": "5d578bba-4f23-402c-a3cd-280d136f22d2",
+              "name": "parent_ids",
+              "value": "={{ $json.parent_ids }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        660,
+        -220
+      ],
+      "id": "5dbd7184-6400-4151-aaa0-109781e31555",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c414d3a9-6bdd-4269-b0ca-a478adf5891f",
+              "name": "status",
+              "value": "completed",
+              "type": "string"
+            },
+            {
+              "id": "8ecf4189-ae4a-4d77-ba82-cf757150a704",
+              "name": "task_id",
+              "value": "={{ $json.task_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1140,
+        200
+      ],
+      "id": "1479c3d0-5b9e-43d5-9232-43915eaee0be",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "workflow_tasks",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "task_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.task_id }}"
+            }
+          ]
+        },
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        200
+      ],
+      "id": "7d20ba9d-0d44-4c34-a5e4-cb9c1ab074da",
+      "name": "Update a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "szYmmRGq5qpTXmej",
+          "name": "Supabase account n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        900,
+        200
+      ],
+      "id": "180f3b4e-4a10-4fd1-8cba-941f4b660251",
+      "name": "Merge"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Add a playlist item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add a playlist item": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "Update a row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "versionId": "b3bd552d-37a2-4acf-aefe-b707ee7f231b",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-07-08T15:35:33.705Z",
+      "updatedAt": "2025-07-08T15:35:33.705Z",
+      "id": "PaO0qjDwUNAeujfe",
+      "name": "n8n 서울 밋업"
+    }
+  ]
+}
