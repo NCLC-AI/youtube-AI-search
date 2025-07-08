@@ -1,0 +1,856 @@
+{
+  "createdAt": "2025-07-03T19:30:05.854Z",
+  "updatedAt": "2025-07-08T15:37:00.000Z",
+  "id": "k8bV785h8xBbtzPF",
+  "name": "youtube-start-workflow",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "youtube-start-workflow",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "40cadf42-e5f6-4865-aa9c-92ecf3ae2905",
+      "name": "Webhook",
+      "webhookId": "19952173-e373-4f85-ae47-027bc0f649b6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "df9896b0-dfaa-41da-b76f-54a092133aeb",
+              "name": "searchQuery",
+              "value": "={{ $json.body.searchQuery }}",
+              "type": "string"
+            },
+            {
+              "id": "80f297f4-6318-4127-9f47-5c89889ffeb2",
+              "name": "dateAfter",
+              "value": "={{ $json.body.dateAfter }}",
+              "type": "string"
+            },
+            {
+              "id": "c5610e78-a4ee-4f36-97da-4df50be1cf29",
+              "name": "dateBefore",
+              "value": "={{ $json.body.dateBefore }}",
+              "type": "string"
+            },
+            {
+              "id": "cdbc708d-e1f1-4e27-8c1d-ecfc7cb34426",
+              "name": "selectedPlaylists",
+              "value": "={{ $json.body.selectedPlaylists }}",
+              "type": "array"
+            },
+            {
+              "id": "437eaec2-4b90-4269-b072-642f8ecd3cca",
+              "name": "youtubeChannels",
+              "value": "={{ $json.body.youtubeChannels }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        440,
+        0
+      ],
+      "id": "4cbea8db-ed4b-4ff7-acbb-ab8de176072e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2c06589b-de4d-447a-90cd-0149b8207024",
+              "name": "success",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "381a9f31-3efe-4814-bd9e-996e0e36ea00",
+              "name": "workflowId",
+              "value": "=123",
+              "type": "string"
+            },
+            {
+              "id": "b7b26610-08ca-420e-9cd2-ad53f6669759",
+              "name": "message",
+              "value": "워크플로우 시작",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        740,
+        -160
+      ],
+      "id": "cb9cd9ca-aa53-454f-821a-af9837f4ade3",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        960,
+        -160
+      ],
+      "id": "b1b175e4-c470-4b1a-a7fa-889cb4815c21",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "xH1NWce68w0W7anQ",
+          "mode": "list",
+          "cachedResultName": "My project — 002. AI 프롬프트도 AI가! - system prompt by AI"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "searchQuery": "={{ $json.searchQuery }}",
+            "dateAfter": "={{ $json.dateAfter }}",
+            "dateBefore": "={{ $json.dateBefore }}",
+            "selectedPlaylists": "={{ $json.selectedPlaylists }}",
+            "youtubeChannels": "={{ $json.youtubeChannels }}",
+            "parent_ids": "={{ Array.of(0) }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "searchQuery",
+              "displayName": "searchQuery",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "dateAfter",
+              "displayName": "dateAfter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "dateBefore",
+              "displayName": "dateBefore",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "selectedPlaylists",
+              "displayName": "selectedPlaylists",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array",
+              "removed": false
+            },
+            {
+              "id": "youtubeChannels",
+              "displayName": "youtubeChannels",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array",
+              "removed": false
+            },
+            {
+              "id": "parent_ids",
+              "displayName": "parent_ids",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        740,
+        220
+      ],
+      "id": "5fc11277-af32-4151-8c96-9fc0d717cbd4",
+      "name": "Youtube 검색어 생성"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        960,
+        120
+      ],
+      "id": "121817e7-46da-48ad-b309-8d7c0c3012fa",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "gmodHqLpihbWOs87",
+          "mode": "list",
+          "cachedResultName": "My project — 003. 복잡한 데이터 정리를 노드만으로 해결하기 - split/aggregate/merge"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "queries": "={{ $json.output.search_queries }}",
+            "dateAfter": "={{ $json.dateAfter }}",
+            "dateBefore": "={{ $json.dateBefore }}",
+            "selectedPlaylists": "={{ $json.selectedPlaylists }}",
+            "youtubeChannels": "={{ $json.youtubeChannels }}",
+            "parent_ids": "={{ Array.of(1) }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "queries",
+              "displayName": "queries",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array"
+            },
+            {
+              "id": "dateAfter",
+              "displayName": "dateAfter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "dateBefore",
+              "displayName": "dateBefore",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "selectedPlaylists",
+              "displayName": "selectedPlaylists",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array"
+            },
+            {
+              "id": "youtubeChannels",
+              "displayName": "youtubeChannels",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array"
+            },
+            {
+              "id": "parent_ids",
+              "displayName": "parent_ids",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1220,
+        120
+      ],
+      "id": "2845f147-898a-44c1-a1ff-3955c8d34301",
+      "name": "Youtube 검색 query"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "W2FGIjqHHRSdxsSQ",
+          "mode": "list",
+          "cachedResultName": "My project — 004. 빈 결과에 당황하지 않는 워크플로우 설계법 - always output"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query": "={{ $json.query }}",
+            "dateAfter": "={{ $json.dateAfter }}",
+            "dateBefore": "={{ $json.dateBefore }}",
+            "parent_ids": "={{ Array.of(2) }}",
+            "task_id": "={{ $json.task_id }}",
+            "playlist_id": "={{ $json.selectedPlaylists[0] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "dateAfter",
+              "displayName": "dateAfter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "dateBefore",
+              "displayName": "dateBefore",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "parent_ids",
+              "displayName": "parent_ids",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array",
+              "removed": false
+            },
+            {
+              "id": "task_id",
+              "displayName": "task_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "playlist_id",
+              "displayName": "playlist_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2620,
+        -20
+      ],
+      "id": "1f153220-c79e-466d-8d77-0816440c123f",
+      "name": "Youtube 검색"
+    },
+    {
+      "parameters": {
+        "tableId": "workflow_tasks",
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        460,
+        -260
+      ],
+      "id": "c36dc3d6-f12f-43e2-97ed-88064006f705",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "szYmmRGq5qpTXmej",
+          "name": "Supabase account n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bedc3ace-9084-44a4-ad48-07e08648a261",
+              "name": "task_id",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "1d75dd3a-1cc0-4a34-b762-16f44e515b4b",
+              "name": "title",
+              "value": "workflow 시작",
+              "type": "string"
+            },
+            {
+              "id": "46de35e0-08a9-4dac-8227-3f368026480e",
+              "name": "description",
+              "value": "workflow 시작",
+              "type": "string"
+            },
+            {
+              "id": "c414d3a9-6bdd-4269-b0ca-a478adf5891f",
+              "name": "status",
+              "value": "completed",
+              "type": "string"
+            },
+            {
+              "id": "5d578bba-4f23-402c-a3cd-280d136f22d2",
+              "name": "parent_ids",
+              "value": "[]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        -260
+      ],
+      "id": "281e19d7-328f-4d5c-ab2a-445051ab7dfc",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad0304dd-0597-4d17-b462-2e5e9cd72f8d",
+              "name": "data",
+              "value": "={{ $json.data }}",
+              "type": "array"
+            },
+            {
+              "id": "128a1cd0-a0b8-4fb8-a1a6-d20193e05937",
+              "name": "task_id",
+              "value": "={{ Array.from({length: $json.data.length}, (_, i) => 3 + i) }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1660,
+        120
+      ],
+      "id": "8af8f95f-a59d-45df-870f-22cb0a8dda75",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        120
+      ],
+      "id": "3a8f0e67-bf94-4661-97f6-7125e17ae368",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "content": "## 006 js expression\nhttps://www.genspark.ai/agents?id=8c086cc1-8f10-4d18-b0b4-e977e8cf5d15"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        420,
+        400
+      ],
+      "id": "aaef92ec-7c61-4ff0-84fc-11b089a383c9",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 006 js expression\nhttps://www.genspark.ai/agents?id=b95d0e77-edb6-4bd5-a8ec-2795e919d694",
+        "height": 140
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        320
+      ],
+      "id": "688db92d-b2fa-4b2b-822b-1395b4606013",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3d978fec-6580-493d-8a17-59932dbcedf2",
+              "name": "data",
+              "value": "={{ $json.data.map((item, index) => ({...item, task_id: $json.task_id[index]})) }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1880,
+        120
+      ],
+      "id": "2728336b-b258-45e2-90ab-d7cb43d5db00",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2100,
+        120
+      ],
+      "id": "50ea8039-588d-41d1-afae-094a6f899a15",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "content": "## 005 진행상황 표시하기",
+        "height": 80,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        -380
+      ],
+      "id": "80a8b2d7-e226-4a72-adf7-13f0bf90e6f9",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## 007 동시에 실행",
+        "height": 80,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2480,
+        180
+      ],
+      "id": "ed643b97-113c-4c77-a110-1d8d5af0f9f8",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2340,
+        -20
+      ],
+      "id": "9afd4b4d-90e8-4055-a4cc-d9d8692a7b0c",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "content": "## 002. AI 프롬프트도 AI가! - system prompt by AI",
+        "height": 120,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        720,
+        400
+      ],
+      "id": "a842c93f-97ac-4173-a11b-e861f78915e4",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## 003. 복잡한 데이터 정리를 노드만으로 해결하기 - split/aggregate/summarize/merge",
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        300
+      ],
+      "id": "e626ec21-882c-4c5f-850c-481e9a5ef5cb",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## 004. 빈 결과에 당황하지 않는 워크플로우 설계법 - always output",
+        "height": 80,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2520,
+        -180
+      ],
+      "id": "5a0c7913-8708-41f2-b2c7-6bc42c44e8a1",
+      "name": "Sticky Note6"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Youtube 검색어 생성",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Youtube 검색어 생성": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Youtube 검색 query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Youtube 검색 query": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Youtube 검색": {
+      "main": [
+        []
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Youtube 검색",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "versionId": "cd805733-15a7-45a5-863e-f49cbdb6b4fc",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2025-07-08T15:35:33.705Z",
+      "updatedAt": "2025-07-08T15:35:33.705Z",
+      "id": "PaO0qjDwUNAeujfe",
+      "name": "n8n 서울 밋업"
+    }
+  ]
+}
