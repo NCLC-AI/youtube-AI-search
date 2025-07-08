@@ -1,0 +1,1137 @@
+{
+  "createdAt": "2025-07-01T11:43:57.919Z",
+  "updatedAt": "2025-07-08T16:53:40.000Z",
+  "id": "W2FGIjqHHRSdxsSQ",
+  "name": "004. 빈 결과에 당황하지 않는 워크플로우 설계법 - always output",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "video",
+        "limit": 10,
+        "filters": {
+          "publishedAfter": "={{ $json.dateAfter.toDateTime() }}",
+          "publishedBefore": "={{ $json.dateBefore.toDateTime().plus(1,'days') }}",
+          "q": "={{ $json.query }}",
+          "regionCode": "KR"
+        },
+        "options": {
+          "order": "relevance"
+        }
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        560,
+        200
+      ],
+      "id": "ad9fa9eb-a3cd-4fac-881e-6719b19c94bc",
+      "name": "Get many videos",
+      "alwaysOutputData": true,
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "uPrqJ6CsuRT6SXaH",
+          "name": "YouTube account nocodeai.jimmy.inst"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "query"
+            },
+            {
+              "name": "dateAfter"
+            },
+            {
+              "name": "dateBefore"
+            },
+            {
+              "name": "parent_ids",
+              "type": "array"
+            },
+            {
+              "name": "task_id",
+              "type": "number"
+            },
+            {
+              "name": "playlist_id"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        440
+      ],
+      "id": "dbaa430d-be36-4c06-98ec-39b87a9e7c44",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=title: {{ $json.snippet.title }}\ndescription :\n{{ $json.snippet.description }}\nsearch query : {{ $json.query }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert YouTube search result evaluator. Your task is to assess how well a YouTube video matches a given search query by analyzing the video's title and description.\n\n## Evaluation Framework\n\n### Core Evaluation Dimensions (Total: 100 points)\n\n1. **Keyword Relevance (0-30 points)**\n   - Direct keyword matches between query and title/description\n   - Semantic similarity of related terms\n   - Coverage of query concepts\n\n2. **Intent Alignment (0-25 points)**\n   - How well the video's apparent purpose matches the search intent\n   - Consider query types: informational, educational, tutorial, entertainment, etc.\n   - Assess if content level (beginner/advanced) matches implied query level\n\n3. **Content Quality Indicators (0-20 points)**\n   - Professional presentation (title structure, description completeness)\n   - Educational value signals (series format, structured approach)\n   - Credibility markers (clear explanations, systematic content)\n\n4. **Topical Depth & Scope (0-15 points)**\n   - How comprehensively the content appears to cover the query topic\n   - Specificity vs. generality alignment with query expectations\n   - Breadth of coverage indicated\n\n5. **Content Accessibility (0-10 points)**\n   - Appropriate entry level for the query\n   - Clear learning path or information structure\n   - Language clarity and approach suitability\n\n### Query-Adaptive Scoring\n\n- **Tutorial/How-to queries**: Emphasize practical approach, step-by-step structure\n- **Conceptual queries**: Focus on depth, comprehensive coverage, foundational understanding\n- **Specific technology/tool queries**: Prioritize exact matches, technical accuracy\n- **General topic queries**: Value broad coverage, multiple perspectives\n- **Advanced/specialized queries**: Weight technical depth, expert-level content\n\n### Scoring Guidelines\n\n- **90-100**: Exceptional match - query intent perfectly fulfilled\n- **80-89**: Strong match - highly relevant with minor gaps\n- **70-79**: Good match - relevant but some limitations\n- **60-69**: Moderate match - partially relevant\n- **50-59**: Weak match - limited relevance\n- **Below 50**: Poor match - minimal relevance\n\n## Output Requirements\n\nProvide your evaluation in the specified JSON format with:\n- Overall score (0-100)\n- Detailed breakdown by dimension\n- Clear reasoning for each score\n- Comprehensive summary of match quality\n\n**Important: All text content in the JSON output must be written in Korean language, including reasoning, analysis, strengths, limitations, and summary fields.**"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1380,
+        220
+      ],
+      "id": "a0b8f287-56ee-4447-b383-43ee16517ea1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1160,
+        393.75
+      ],
+      "id": "8429e4d2-76d2-4df4-8932-5f65c4a7adc4",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"$id\": \"https://example.com/youtube-relevance-evaluation.schema.json\",\n  \"title\": \"YouTube Search Result Relevance Evaluation\",\n  \"description\": \"Schema for evaluating how well a YouTube video matches a search query\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"overall_score\": {\n      \"type\": \"integer\",\n      \"minimum\": 0,\n      \"maximum\": 100,\n      \"description\": \"Overall relevance score from 0 to 100\"\n    },\n    \"detailed_scores\": {\n      \"type\": \"object\",\n      \"description\": \"Breakdown of scores by evaluation dimension\",\n      \"properties\": {\n        \"keyword_relevance\": {\n          \"type\": \"object\",\n          \"description\": \"Assessment of keyword and semantic matching\",\n          \"properties\": {\n            \"score\": {\n              \"type\": \"integer\",\n              \"minimum\": 0,\n              \"maximum\": 30,\n              \"description\": \"Score for keyword relevance (0-30)\"\n            },\n            \"reasoning\": {\n              \"type\": \"string\",\n              \"description\": \"Explanation of keyword matching assessment\"\n            }\n          },\n          \"required\": [\"score\", \"reasoning\"]\n        },\n        \"intent_alignment\": {\n          \"type\": \"object\",\n          \"description\": \"How well video purpose matches search intent\",\n          \"properties\": {\n            \"score\": {\n              \"type\": \"integer\",\n              \"minimum\": 0,\n              \"maximum\": 25,\n              \"description\": \"Score for intent alignment (0-25)\"\n            },\n            \"reasoning\": {\n              \"type\": \"string\",\n              \"description\": \"Explanation of intent matching assessment\"\n            }\n          },\n          \"required\": [\"score\", \"reasoning\"]\n        },\n        \"content_quality\": {\n          \"type\": \"object\",\n          \"description\": \"Assessment of content quality indicators\",\n          \"properties\": {\n            \"score\": {\n              \"type\": \"integer\",\n              \"minimum\": 0,\n              \"maximum\": 20,\n              \"description\": \"Score for content quality (0-20)\"\n            },\n            \"reasoning\": {\n              \"type\": \"string\",\n              \"description\": \"Explanation of quality assessment\"\n            }\n          },\n          \"required\": [\"score\", \"reasoning\"]\n        },\n        \"topical_depth\": {\n          \"type\": \"object\",\n          \"description\": \"Evaluation of topic coverage depth and scope\",\n          \"properties\": {\n            \"score\": {\n              \"type\": \"integer\",\n              \"minimum\": 0,\n              \"maximum\": 15,\n              \"description\": \"Score for topical depth (0-15)\"\n            },\n            \"reasoning\": {\n              \"type\": \"string\",\n              \"description\": \"Explanation of depth and scope assessment\"\n            }\n          },\n          \"required\": [\"score\", \"reasoning\"]\n        },\n        \"content_accessibility\": {\n          \"type\": \"object\",\n          \"description\": \"Assessment of content accessibility and approach\",\n          \"properties\": {\n            \"score\": {\n              \"type\": \"integer\",\n              \"minimum\": 0,\n              \"maximum\": 10,\n              \"description\": \"Score for content accessibility (0-10)\"\n            },\n            \"reasoning\": {\n              \"type\": \"string\",\n              \"description\": \"Explanation of accessibility assessment\"\n            }\n          },\n          \"required\": [\"score\", \"reasoning\"]\n        }\n      },\n      \"required\": [\"keyword_relevance\", \"intent_alignment\", \"content_quality\", \"topical_depth\", \"content_accessibility\"]\n    },\n    \"query_analysis\": {\n      \"type\": \"object\",\n      \"description\": \"Analysis of the search query characteristics\",\n      \"properties\": {\n        \"query_type\": {\n          \"type\": \"string\",\n          \"enum\": [\"tutorial\", \"conceptual\", \"specific_technology\", \"general_topic\", \"advanced_specialized\", \"other\"],\n          \"description\": \"Categorization of the search query type\"\n        },\n        \"implied_intent\": {\n          \"type\": \"string\",\n          \"description\": \"Inferred user intent behind the search query\"\n        },\n        \"key_concepts\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          },\n          \"description\": \"List of key concepts identified in the query\"\n        }\n      },\n      \"required\": [\"query_type\", \"implied_intent\", \"key_concepts\"]\n    },\n    \"strengths\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"List of key strengths in the video's relevance to the query\"\n    },\n    \"limitations\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"List of limitations or gaps in the video's relevance to the query\"\n    },\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\": \"Comprehensive summary of the evaluation and overall match quality\"\n    }\n  },\n  \"required\": [\"overall_score\", \"detailed_scores\", \"query_analysis\", \"strengths\", \"limitations\", \"summary\"]\n}\n",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1460,
+        440
+      ],
+      "id": "442e58a5-705a-4c3b-8b66-5c00654ce3e0",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        620
+      ],
+      "id": "c56ecb68-c595-4536-976c-0a471d793e37",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "wCp1s5K88PESNvOR",
+          "name": "ZDefault"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2040,
+        393.75
+      ],
+      "id": "42a7bd44-33b8-4258-8223-23ef70c2b553",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b69ef16f-bff2-42f5-a9bf-4c71a094bf14",
+              "name": "videoId",
+              "value": "={{ $json.id.videoId }}",
+              "type": "string"
+            },
+            {
+              "id": "75da5d87-e18f-475e-943f-0e68bc2f8217",
+              "name": "title",
+              "value": "={{ $json.snippet.title }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1820,
+        567.5
+      ],
+      "id": "b174cf77-681c-4369-8f07-cc1b242b6641",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a7c5697b-9a0e-4702-b557-cb9d1405250e",
+              "name": "score",
+              "value": "={{ $json.output.overall_score }}",
+              "type": "number"
+            },
+            {
+              "id": "bf4c4ee8-f652-41aa-83e5-8329f12bf7a9",
+              "name": "reason",
+              "value": "={{ $json.output.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "055d6d3c-fa20-4064-9616-6958c29bf532",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1820,
+        220
+      ],
+      "id": "ffd79bce-0327-4d6c-b1b1-0634c336b254",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "content": "## system prompt를 만드는 prompt\nhttps://www.genspark.ai/agents?id=352c9545-211e-4d39-83c5-5c4b5d9de935",
+        "width": 380
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        40
+      ],
+      "id": "d266fdbc-1171-4c54-8bfc-f2ba3ebe9d66",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a9672ae1-ad4e-4f48-b792-e97c002e0581",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        180
+      ],
+      "id": "2c8c17ae-f94f-4a94-b383-5f973e75b7eb",
+      "name": "If 검색결과 없다면?"
+    },
+    {
+      "parameters": {
+        "tableId": "workflow_tasks",
+        "dataToSend": "autoMapInputData",
+        "inputsToIgnore": "query"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        820,
+        -120
+      ],
+      "id": "6f43d1ec-bc68-424a-bdea-68bc21310b4e",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "szYmmRGq5qpTXmej",
+          "name": "Supabase account n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bedc3ace-9084-44a4-ad48-07e08648a261",
+              "name": "task_id",
+              "value": "={{ $json.task_id }}",
+              "type": "number"
+            },
+            {
+              "id": "1d75dd3a-1cc0-4a34-b762-16f44e515b4b",
+              "name": "title",
+              "value": "Youtube 검색",
+              "type": "string"
+            },
+            {
+              "id": "46de35e0-08a9-4dac-8227-3f368026480e",
+              "name": "description",
+              "value": "Youtube 검색",
+              "type": "string"
+            },
+            {
+              "id": "c414d3a9-6bdd-4269-b0ca-a478adf5891f",
+              "name": "status",
+              "value": "running",
+              "type": "string"
+            },
+            {
+              "id": "5d578bba-4f23-402c-a3cd-280d136f22d2",
+              "name": "parent_ids",
+              "value": "={{ $json.parent_ids }}",
+              "type": "array"
+            },
+            {
+              "id": "09996c62-768a-4b79-8bc4-8ad831f71ee4",
+              "name": "query",
+              "value": "={{ $json.query }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        600,
+        -120
+      ],
+      "id": "285386a2-8e8b-46f0-ae9f-4ce8b47b3906",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c414d3a9-6bdd-4269-b0ca-a478adf5891f",
+              "name": "status",
+              "value": "completed",
+              "type": "string"
+            },
+            {
+              "id": "d0b6cf69-ba09-40ad-b816-9094abd0e934",
+              "name": "description",
+              "value": "={{ $json.data.map(item => `<div style=\"margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;\"><h3 style=\"margin: 0 0 10px 0; color: #333;\"><a href=\"https://www.youtube.com/watch?v=${item.videoId}\" target=\"_blank\" style=\"text-decoration: none; color: #1a73e8;\">${item.title}</a></h3><div style=\"display: flex; gap: 20px; margin-bottom: 10px;\"><span style=\"background-color: #e8f0fe; padding: 4px 8px; border-radius: 4px; font-weight: bold; color: #1967d2;\">Score: ${item.score}</span><span style=\"background-color: #fce8e6; padding: 4px 8px; border-radius: 4px; font-size: 12px; color: #d93025;\">YouTube</span></div><p style=\"margin: 0; line-height: 1.5; color: #555;\"><strong>이유:</strong> ${item.reason}</p></div>`).join('\\n') }}",
+              "type": "string"
+            },
+            {
+              "id": "8ecf4189-ae4a-4d77-ba82-cf757150a704",
+              "name": "task_id",
+              "value": "={{ $json.task_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2880,
+        -100
+      ],
+      "id": "0ff5eb48-ed97-4b01-aada-eaeab7e4ec8e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "workflow_tasks",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "task_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.task_id }}"
+            }
+          ]
+        },
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3080,
+        -100
+      ],
+      "id": "2081211b-2720-464d-a5f1-6aa3dffccc96",
+      "name": "Update a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "szYmmRGq5qpTXmej",
+          "name": "Supabase account n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2640,
+        -100
+      ],
+      "id": "d5a3ce3a-d65e-4ef9-91bc-80611020dc80",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2460,
+        60
+      ],
+      "id": "b1ad3d57-d52b-4720-a97c-a383118b3ac4",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "score",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        60
+      ],
+      "id": "d197c5b7-5037-4c3d-8f6b-abc5dcafff96",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c414d3a9-6bdd-4269-b0ca-a478adf5891f",
+              "name": "status",
+              "value": "completed",
+              "type": "string"
+            },
+            {
+              "id": "d0b6cf69-ba09-40ad-b816-9094abd0e934",
+              "name": "description",
+              "value": "={{ $json.query }}에 대해 검색된 내용이 없습니다",
+              "type": "string"
+            },
+            {
+              "id": "8ecf4189-ae4a-4d77-ba82-cf757150a704",
+              "name": "task_id",
+              "value": "={{ $json.task_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1460,
+        -380
+      ],
+      "id": "d4b9bf56-6cf5-4d40-8c7b-caaae29c8fef",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "workflow_tasks",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "task_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.task_id }}"
+            }
+          ]
+        },
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1660,
+        -380
+      ],
+      "id": "aafda260-3bef-41ce-8c01-f94bfac32020",
+      "name": "Update a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "szYmmRGq5qpTXmej",
+          "name": "Supabase account n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1280,
+        -380
+      ],
+      "id": "20304547-a538-4086-9b49-4ba9fdfb49dc",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "content": "## 006 js expression\nhttps://www.genspark.ai/agents?id=30814470-cace-4605-bd43-71761b3252bf",
+        "height": 140
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        80
+      ],
+      "id": "c18b9d52-0763-4e04-ab85-5a6d2f9daf62",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "14407702-8090-47b4-b22f-8e96bfcd9e6a",
+              "leftValue": "={{ $json.score }}",
+              "rightValue": 60,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2760,
+        880
+      ],
+      "id": "bbab3cb8-77e3-4525-8a04-2b52b889c703",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2980,
+        880
+      ],
+      "id": "a0c7db6a-920c-4e9d-b3fe-130f64eadb1c",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3280,
+        1000
+      ],
+      "id": "5c54f6e4-03c1-4837-b8bf-44d6cd7a5bc5",
+      "name": "Merge4"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "task_id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        3500,
+        1000
+      ],
+      "id": "0b15ca98-aa74-48c3-a312-8ec28f3c2c55",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3720,
+        1000
+      ],
+      "id": "b91a9ba3-3262-44c0-bd76-27230083cf10",
+      "name": "Merge5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "40365e4d-1a75-4546-8508-577b8210a831",
+              "name": "playlist_id",
+              "value": "={{ $json.playlist_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2860,
+        1360
+      ],
+      "id": "c01a5119-3e63-4dfb-80b7-da251f5dd54e",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "content": "## 005 진행상황 표시하기",
+        "height": 80,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2900,
+        -240
+      ],
+      "id": "7b333620-aead-42a6-813b-ef87658db632",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## 005 진행상황 표시하기",
+        "height": 80,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1460,
+        -540
+      ],
+      "id": "c153de1d-d24e-44b6-973d-1760c2e91e75",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 005 진행상황 표시하기",
+        "height": 80,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        580,
+        -260
+      ],
+      "id": "218758a0-0ace-4ebc-a5a4-ecd57deb8cff",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Yd4JQTuIdAwz2mqs",
+          "mode": "list",
+          "cachedResultName": "My project — Playlist에 추가"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "parent_ids": "={{ Array.of($json.task_id) }}",
+            "task_id": "={{ $json.task_id + 1000 }}",
+            "videoId": "={{ $json.data.videoId }}",
+            "title": "={{ $json.data.title }}",
+            "playlist_id": "={{ $json.playlist_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "task_id",
+              "displayName": "task_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "parent_ids",
+              "displayName": "parent_ids",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array"
+            },
+            {
+              "id": "videoId",
+              "displayName": "videoId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "playlist_id",
+              "displayName": "playlist_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        3940,
+        1000
+      ],
+      "id": "2793bada-0f26-4c41-9072-b8c1c7b57b48",
+      "name": "Playlist에 video 추가"
+    }
+  ],
+  "connections": {
+    "Get many videos": {
+      "main": [
+        [
+          {
+            "node": "If 검색결과 없다면?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get many videos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If 검색결과 없다면?": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 2
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "Update a row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge4": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge5": {
+      "main": [
+        [
+          {
+            "node": "Playlist에 video 추가",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "versionId": "20cedb6d-6e93-48e1-95b7-87aa6dce73da",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-07-08T15:35:33.705Z",
+      "updatedAt": "2025-07-08T15:35:33.705Z",
+      "id": "PaO0qjDwUNAeujfe",
+      "name": "n8n 서울 밋업"
+    }
+  ]
+}
