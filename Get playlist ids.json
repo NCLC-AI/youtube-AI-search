@@ -1,0 +1,183 @@
+{
+  "createdAt": "2025-07-03T17:37:01.016Z",
+  "updatedAt": "2025-07-08T15:36:31.000Z",
+  "id": "P8aQxxblq6DOsSvR",
+  "name": "Get playlist ids",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "playlist",
+        "returnAll": true,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
+      "id": "be05e7cb-e9ef-453e-a181-f899765d4359",
+      "name": "Get many playlists",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "26iW8g2Iqk4YBqnd",
+          "name": "YouTube account[MyProject]"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "44d1e365-fa78-4082-8f9d-5f607f49e059",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d10695e6-e8f4-44bc-80f0-3c66edb15421",
+              "name": "title",
+              "value": "={{ $json.snippet.title }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        440,
+        0
+      ],
+      "id": "69711bd3-155e-412a-ad7b-9e3337bb11c4",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "path": "yotube-playlists",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "fcce8096-bf34-4c9c-adda-00a8282f6f15",
+      "name": "Webhook",
+      "webhookId": "c8aab62e-13a7-4c45-b773-997d09c74912"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        660,
+        0
+      ],
+      "id": "0b3c74d0-7081-4cde-8d42-5c39d8c5b1ec",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad3a2cf5-8237-42ee-85fc-1dcfc3c0b5ed",
+              "name": "data",
+              "value": "={{ $json.data }}",
+              "type": "array"
+            },
+            {
+              "id": "4af2fc07-922e-4f04-8104-022dd5e3ec7b",
+              "name": "success",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        0
+      ],
+      "id": "830de971-86ad-4848-b5e9-b11ed4e107ac",
+      "name": "Edit Fields1"
+    }
+  ],
+  "connections": {
+    "Get many playlists": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get many playlists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "versionId": "3f8e9683-3e70-4abb-9457-30eea3543e79",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2025-07-08T15:35:33.705Z",
+      "updatedAt": "2025-07-08T15:35:33.705Z",
+      "id": "PaO0qjDwUNAeujfe",
+      "name": "n8n 서울 밋업"
+    }
+  ]
+}
